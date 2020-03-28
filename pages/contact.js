@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, ScrollView, Picker } from 'react-native'
+import {StyleSheet, ScrollView, Picker} from 'react-native'
 import Overlay from '../components/overlay'
 
 import { Button,
@@ -7,6 +7,7 @@ import { Button,
          Text,
          Form, 
          Item,
+         Input,
          Textarea,
          DatePicker
         } from 'native-base';
@@ -32,14 +33,14 @@ const styles = StyleSheet.create({
 })
 
 
-const VacationScreen = (props) => {
+const ContactScreen = (props) => {
   const {navigate} = props.navigation;
   return (
     <Overlay>
       <ScrollView style={styles.form}>
         <Form>
           <Item>
-              <Text>Start:</Text>
+              <Text>Date:</Text>
               <DatePicker
                 animationType={"fade"}
                 androidMode={"default"}
@@ -49,39 +50,33 @@ const VacationScreen = (props) => {
                 />
           </Item>
           <Item>
-              <Text>End:</Text>
-              <DatePicker
-                animationType={"fade"}
-                androidMode={"default"}
-                placeHolderText="Select date"
-                textStyle={{ color: "green" }}
-                placeHolderTextStyle={{ color: "#d3d3d3" }}
-                />
+            <Text>First Name:</Text>
+            <Input />
           </Item>
-          <View style={{marginTop: 16, marginLeft: 12}}>
-            <Text>Category:</Text>
-            <Picker>
-                <Picker.Item value='1' label='Annual Vacation Time'/>
-                <Picker.Item value='2' label='Sick Leave'/>
-                <Picker.Item value='3' label='Annual Vacation Time'/>
-                <Picker.Item value='4' label='Study Leave'/>
-                <Picker.Item value='5' label='Maternity Leave'/>
-                <Picker.Item value='6' label='Bereavement Leave'/>
-            </Picker>
-          </View>
+          <Item>
+            <Text>Last Name:</Text>
+            <Input />
+          </Item>
+          <Item>
+            <Text>Email:</Text>
+            <Input />
+          </Item>
+          <Item>
+            <Text>Phone:</Text>
+            <Input />
+          </Item>
           <Textarea 
             style={{
               margin:16,
               marginTop:16
             }}
-            rowSpan={5} bordered placeholder="Notes" />
-          
+            rowSpan={5} bordered placeholder="Address" />
           
         </Form>
         <View style={styles.buttonContainer}>
         <Button primary 
           onPress={() =>navigate('Home')}>
-            <Text style={{textAlign: 'center'}}>Submit Application</Text>
+            <Text style={{textAlign: 'center'}}>Create Contact</Text>
           </Button>
         </View>
       </ScrollView>
@@ -90,4 +85,4 @@ const VacationScreen = (props) => {
 };
 
 
-export default VacationScreen;
+export default ContactScreen;

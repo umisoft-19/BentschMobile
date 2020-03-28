@@ -17,7 +17,7 @@ styles = StyleSheet.create({
     top: 120,
     left: 16,
     right: 16,
-    bottom:0
+    height: '100%'
   },
   cardBody: {
     flex: 1,
@@ -59,7 +59,6 @@ const HomeScreenCard = (props) =>{
 }
 
 
-
 const HomeScreen = (props) => {
   const {navigate} = props.navigation
   return (
@@ -71,10 +70,10 @@ const HomeScreen = (props) => {
             </Button>
           </HomeScreenCard>
           <HomeScreenCard icon={faUsers} title='Employee'>
-            <Button transparent>
+            <Button transparent onPress={() => navigate('Logger')}>
               <Text>Log Time In/Out</Text>
             </Button>
-            <Button transparent>
+            <Button transparent onPress={() => navigate('Vacation')}>
               <Text>Apply for Vacation Time</Text>
             </Button>
           </HomeScreenCard>
@@ -85,33 +84,35 @@ const HomeScreen = (props) => {
             <Button transparent>
               <Text>Create Invoice</Text>
             </Button>
-            <Button transparent>
+            <Button transparent onPress={() => navigate('Contact')}>
+              <Text>Create Contact</Text>
+            </Button>
+            <Button transparent onPress={() => navigate('Lead')}>
               <Text>Create Lead</Text>
             </Button>
-            <Button transparent>
+            <Button transparent onPress={() => navigate('Customer')}>
               <Text>Create Customer</Text>
             </Button>
           </HomeScreenCard>
           <HomeScreenCard icon={faToolbox} title='Services'>
+            <Button transparent>
+                <Text>Jobs</Text>
+            </Button>
           </HomeScreenCard>
           <HomeScreenCard icon={faWarehouse} title='Inventory'>
             <Button transparent>
               <Text>Stock Take</Text>
             </Button>
-            <Button transparent>
+            <Button transparent onPress={() => navigate('Vendor')}>
               <Text>Add Vendor</Text>
             </Button>
           </HomeScreenCard>
           <HomeScreenCard icon={faDollarSign} title='Accounting'>
-            <Button transparent>
+            <Button transparent onPress={() => navigate('Expense')}>
               <Text>Record Expense</Text>
             </Button>
-          </HomeScreenCard>
-         
-     
-          
+          </HomeScreenCard>     
         </ScrollView>
-          
       </Overlay>
   );
 };
