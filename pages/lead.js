@@ -1,6 +1,8 @@
 import React from 'react';
 import {StyleSheet, ScrollView, Picker} from 'react-native'
 import Overlay from '../components/overlay'
+import AsyncStorage from '@react-native-community/async-storage';
+import axios from 'axios'
 
 import { Button,
          View,
@@ -65,12 +67,7 @@ const LeadScreen = (props) => {
                   <Picker.Item value='1' label='Sales Rep' />
               </Picker>
           </View>
-          <View>
-              <Text>Team: </Text>
-              <Picker>
-                  <Picker.Item value='1' label='Sales Team' />
-              </Picker>
-          </View>
+          
           <View>
               <Text>Source: </Text>
               <Picker>

@@ -20,7 +20,6 @@ import { Button,
               paddingHorizontal: 64,
               paddingVertical: 16,
               color: 'white'
-          
             },
             lower: {
               backgroundColor: '#007bff',

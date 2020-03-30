@@ -23,7 +23,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 8,
     margin: 16,
-    padding: 24
+    padding: 24,
+    flex: 1
   },
 
   buttonContainer: {
@@ -47,7 +48,6 @@ const LoginScreen = (props) => {
           <Item>
             <Input placeholder='Username'
               value={name}
-              autoFocus
               onChangeText={text=>setName(text)} />
           </Item>
           <Item>
@@ -81,7 +81,15 @@ const LoginScreen = (props) => {
                   'Authorization': 'Token ' + res.data.token
                 }
               })
-              AsyncStorage.setItem('userID',users.data.filter(usr => usr.username == name)[0].id)
+              const userID = users.data.filter(usr => usr.username == name)[0].id
+              AsyncStorage.setItem('userID',userID.toString())
+              const employees = await axios.get(`http://${server}/employees/api/employee`,  {
+                headers: {
+                'Authorization': 'Token ' + res.data.token
+              }
+            })
+            const employeeID = employees.data.filter(emp => emp.user == userID)[0].employee_number
+            AsyncStorage.setItem('employeeID',employeeID.toString())
 
                 console.log('success')
                 navigate('Home')

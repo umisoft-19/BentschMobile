@@ -65,9 +65,22 @@ const HomeScreen = (props) => {
       <Overlay>
         <ScrollView style={styles.window}>
           <HomeScreenCard icon={faCalendarAlt} title='Planner'>
+            <Button transparent onPress={() => navigate('EventList')}>
+              <Text>Events</Text>
+            </Button>
+            <Button transparent onPress={() => navigate('ContactList')}>
+              <Text>Contacts</Text>
+            </Button>
+            <Button transparent onPress={() => navigate('ImportContact')}>
+              <Text>Import Phone Contacts</Text>
+            </Button>
+            <Button transparent onPress={() => navigate('Contact')}>
+              <Text>Create Contact</Text>
+            </Button>
             <Button transparent onPress={() => navigate('Event')}>
               <Text>Create Event</Text>
             </Button>
+            
           </HomeScreenCard>
           <HomeScreenCard icon={faUsers} title='Employee'>
             <Button transparent onPress={() => navigate('Logger')}>
@@ -84,8 +97,9 @@ const HomeScreen = (props) => {
             <Button transparent>
               <Text>Create Invoice</Text>
             </Button>
-            <Button transparent onPress={() => navigate('Contact')}>
-              <Text>Create Contact</Text>
+            
+            <Button transparent onPress={() => navigate('LeadList')}>
+              <Text>Leads</Text>
             </Button>
             <Button transparent onPress={() => navigate('Lead')}>
               <Text>Create Lead</Text>

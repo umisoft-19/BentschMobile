@@ -1,6 +1,8 @@
 import React from 'react';
-import {StyleSheet, ScrollView, Picker} from 'react-native'
+import {StyleSheet, ScrollView, ToastAndroid} from 'react-native'
 import Overlay from '../components/overlay'
+import axios from 'axios'
+import AsyncStorage from '@react-native-community/async-storage';
 
 import { Button,
          View,
@@ -35,47 +37,75 @@ const styles = StyleSheet.create({
 
 const ContactScreen = (props) => {
   const {navigate} = props.navigation;
+  const [first, setFirst] = React.useState('')
+  const [last, setLast] = React.useState('')
+  const [phone, setPhone] = React.useState('')
+  const [email, setEmail] = React.useState('')
+  const [addr, setAddr] = React.useState('')
+  let authToken
+  let serverStr
+
+  React.useEffect(() =>{
+    async function init(){
+    authToken = await AsyncStorage.getItem('token')
+    serverStr = await AsyncStorage.getItem('server')
+    }
+    init()
+  },[])
   return (
     <Overlay>
       <ScrollView style={styles.form}>
         <Form>
           <Item>
-              <Text>Date:</Text>
-              <DatePicker
-                animationType={"fade"}
-                androidMode={"default"}
-                placeHolderText="Select date"
-                textStyle={{ color: "green" }}
-                placeHolderTextStyle={{ color: "#d3d3d3" }}
-                />
-          </Item>
-          <Item>
             <Text>First Name:</Text>
-            <Input />
+            <Input onChangeText={text => setFirst(text)} value={first} />
           </Item>
           <Item>
             <Text>Last Name:</Text>
-            <Input />
+            <Input  onChangeText={text => setLast(text)} value={last}/>
           </Item>
           <Item>
             <Text>Email:</Text>
-            <Input />
+            <Input  onChangeText={text => setEmail(text)} value={email}/>
           </Item>
           <Item>
             <Text>Phone:</Text>
-            <Input />
+            <Input keyboardType="numeric"  onChangeText={text => setPhone(text)} value={phone} />
           </Item>
           <Textarea 
             style={{
               margin:16,
               marginTop:16
             }}
+            onChangeText={text => setAddr(text)} value={addr}
             rowSpan={5} bordered placeholder="Address" />
           
         </Form>
         <View style={styles.buttonContainer}>
         <Button primary 
-          onPress={() =>navigate('Home')}>
+          onPress={() =>{
+            axios.post(`http://${serverStr}/base/api/individual/`, {
+              first_name: first,
+              last_name: last,
+              phone: phone,
+              address: addr,
+              email: email
+            }, {
+              headers: {
+              'Authorization': 'Token ' + authToken
+              }
+            }).then(res => {
+              ToastAndroid.show(
+                'Contact added successfully',
+                ToastAndroid.LONG
+              )
+              navigate('Home')
+            }).catch(err =>{
+              console.log(err.response)
+              console.log(err)
+              console.log(err.response.data)
+            })
+          }}>
             <Text style={{textAlign: 'center'}}>Create Contact</Text>
           </Button>
         </View>

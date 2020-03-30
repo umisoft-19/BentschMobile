@@ -1,6 +1,8 @@
-import React from 'react';
+import React, {useState,useEffect} from 'react';
 import {StyleSheet, ScrollView, Picker } from 'react-native'
 import Overlay from '../components/overlay'
+import axios from 'axios'
+import AsyncStorage from '@react-native-community/async-storage';
 
 import { Button,
          View,
@@ -35,6 +37,35 @@ const styles = StyleSheet.create({
 
 
 const ExpenseScreen = (props) => {
+  const [date, setDate] = useState(new Date())
+  const [amount, setAmount] = useState("0.0")
+  const [category, setCategory] = useState("0")
+  const [description, setDescription] = useState("")
+  const [billable, setBillable] = useState(false)
+  const [customer, setCustomer] = useState("1")
+  const [customers, setCustomers] = useState([])
+  let authToken, serverStr
+
+  React.useEffect(() =>{
+    async function init(){
+    authToken = await AsyncStorage.getItem('token')
+    serverStr = await AsyncStorage.getItem('server')
+    id = await AsyncStorage.getItem('employeeID')
+    axios.get(`http://${serverStr}/invoicing/api/customer/`, {
+      headers: {
+      'Authorization': 'Token ' + authToken
+      }
+    }).then(res => {
+      setCustomers(res.data)
+    }).catch(err =>{
+      console.log(err.response)
+      console.log(err)
+      console.log(err.response.data)
+    })
+  }
+    init()
+  },[])
+
   const {navigate} = props.navigation;
   return (
     <Overlay>
@@ -43,6 +74,8 @@ const ExpenseScreen = (props) => {
           <Item>
               <Text>Date:</Text>
               <DatePicker
+                value={date}
+                onDateChange={d => setDate(d)}
                 animationType={"fade"}
                 androidMode={"default"}
                 placeHolderText="Select date"
@@ -52,12 +85,13 @@ const ExpenseScreen = (props) => {
           </Item>
           <Item>
               <Text>Amount:</Text>
-              <Input />
+              <Input value={amount} onChangeText={val=> setAmount(val)} 
+                keyboardType="numeric"/>
           </Item>
          
           <View style={{marginTop: 16, marginLeft: 12}}>
             <Text>Category:</Text>
-            <Picker>
+            <Picker value={category} onValueChange={val => setCategory(val)}>
                 <Picker.Item value='0' label='Advertising'/>
                 <Picker.Item value='1' label='Bank Service Charges'/>
                 <Picker.Item value='2' label='Dues and Subscriptions'/>
@@ -84,18 +118,46 @@ const ExpenseScreen = (props) => {
               margin:16,
               marginTop:16
             }}
+            value={description}
+            onChangeText={text => setDescription(text)}
             rowSpan={5} bordered placeholder="Description" />
           <Text style={{fontSize: 24}}>Billable</Text>
           <Text>Is Billable?</Text>
-          <Switch value={false} />
+          <Switch value={billable} onValueChange={val => setBillable(val)} />
           <Text>Customer:</Text>
-          <Picker>
-              <Picker.Item value='1' label='Generic Customer'/>
+          <Picker value={customer} onValueChange={val => setCustomer(val)}>
+              {customers.map(cus => <Picker.Item 
+                                          value={cus.id} 
+                                          label={`${cus.name}`}/>)}
+              
           </Picker>
         </Form>
         <View style={styles.buttonContainer}>
         <Button primary 
-          onPress={() =>navigate('Home')}>
+           onPress={() =>{
+            axios.post(`http://${serverStr}/accounting/api/expense/`, {
+              date: `${date.toISOString().split('T')[0]}`,
+              amount: amount,
+              category: category,
+              description: description,
+              billable: billable,
+              customer: customer,
+              recorded_by: id,
+            }, {
+              headers: {
+              'Authorization': 'Token ' + authToken
+              }
+            }).then(res => {
+              ToastAndroid.show(
+                'Expense Recorded successfully',
+                ToastAndroid.LONG
+              )
+              navigate('Home')
+            }).catch(err =>{
+              console.log(err.response)
+              console.log(err)
+            })
+          }}>
             <Text style={{textAlign: 'center'}}>Record Expense</Text>
           </Button>
         </View>

@@ -36,36 +36,30 @@ const styles = StyleSheet.create({
 
 const EventScreen = (props) => {
   const {navigate} = props.navigation;
-  const [events, setEvents] = React.useState([])
   const [date, setDate] = React.useState(new Date())
   const [label, setLabel] = React.useState('')
+  const [token, setToken] = React.useState('')
   const [start, setStart] = React.useState('')
   const [end, setEnd] = React.useState('')
+  const [owner, setOwner] = React.useState('')
   const [description, setDescription] = React.useState('')
   const [server, setServer] = React.useState('')
 
-  React.useEffect(async () =>{
-    const token = await AsyncStorage.getItem('token')
-    const id = await AsyncStorage.getItem('userID')
-    console.log('user id')
-    console.log(id)
+  React.useEffect(() =>{
+    async function init(){
+    const authToken = await AsyncStorage.getItem('token')
+    setToken(authToken)
     const serverStr = await AsyncStorage.getItem('server')
     setServer(serverStr)
-    axios.get(`http://${serverStr}/planner/api/event/`, {
-      headers: {
-      'Authorization': 'Token ' + token
+    const ownerStr = await AsyncStorage.getItem('employeeID')
+    setOwner(ownerStr)
     }
-  }).then(res =>{
-      setEvents(res.data)
-    }).catch(err =>{
-      console.log(err)
-    })
+    init()
   },[])
   return (
     <Overlay>
       <ScrollView style={styles.form}>
         <Form>
-  {events.map(event => (<Text key={event.id}>{event.label}</Text>))}
           <Item>
               <Text>Date:</Text>
               <DatePicker
@@ -110,7 +104,7 @@ const EventScreen = (props) => {
         <View style={styles.buttonContainer}>
         <Button primary 
           onPress={() =>{
-            const re = new RegExp('^(0[\d]|1[\d]|2[0-3]):[0-5][0-9]$')
+            const re = new RegExp('^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$')
             if(label ==''){
               Alert.alert('Error!', 'A valid label is required')
               return
@@ -123,12 +117,23 @@ const EventScreen = (props) => {
               Alert.alert('Error', 'Please input a valid end time in the format HH:MM')
               return
             }
-            axios.post(`http://${server}/planner/api/event`, {
-
+            axios.post(`http://${server}/planner/api/event/`, {
+              date: `${date.toISOString().split('T')[0]}`,
+              owner: owner,
+              description: description,
+              label: label,
+              start_time: start + ':00',
+              end_time: end + ':00'
+            }, {
+              headers: {
+              'Authorization': 'Token ' + token
+              }
             }).then(res => {
               navigate('Home')
             }).catch(err =>{
               console.log(err.response)
+              console.log(err)
+              console.log(err.response.data)
             })
           }}>
             <Text style={{textAlign: 'center'}}>Create Event</Text>
