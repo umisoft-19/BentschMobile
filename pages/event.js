@@ -18,17 +18,16 @@ const styles = StyleSheet.create({
   form: {
     position: 'absolute',
     top: 120,
-    left: 0,
-    right: 0,
-    bottom: 32,
+    left: 12,
+    right: 12,
+    bottom: 0,
     backgroundColor: 'white',
     borderRadius: 8,
-    margin: 16,
     padding: 8
   },
 
   buttonContainer: {
-    marginTop: 24,
+    marginVertical: 24,
     marginHorizontal: 48
   }
 })
@@ -48,11 +47,11 @@ const EventScreen = (props) => {
   React.useEffect(() =>{
     async function init(){
     const authToken = await AsyncStorage.getItem('token')
-    setToken(authToken)
     const serverStr = await AsyncStorage.getItem('server')
-    setServer(serverStr)
     const ownerStr = await AsyncStorage.getItem('employeeID')
     setOwner(ownerStr)
+    setServer(serverStr)
+    setToken(authToken)
     }
     init()
   },[])
@@ -102,7 +101,9 @@ const EventScreen = (props) => {
           
         </Form>
         <View style={styles.buttonContainer}>
-        <Button primary 
+        <Button 
+          style={{flexDirection: 'row', justifyContent: 'center'}}
+          primary 
           onPress={() =>{
             const re = new RegExp('^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$')
             if(label ==''){

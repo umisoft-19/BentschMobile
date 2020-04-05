@@ -2,7 +2,7 @@ import React from 'react';
 import Overlay from '../components/overlay'
 import {StyleSheet, ScrollView} from 'react-native'
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
-import { faCalendarAlt, faUsers, faFileAlt, faToolbox, faWarehouse,faDollarSign } from '@fortawesome/free-solid-svg-icons'
+import { faCalendarAlt, faUsers, faFileAlt, faToolbox, faWarehouse,faDollarSign, faHandshake } from '@fortawesome/free-solid-svg-icons'
 import { Button,
          View,
          Text,
@@ -17,7 +17,7 @@ styles = StyleSheet.create({
     top: 120,
     left: 16,
     right: 16,
-    height: '100%'
+    bottom: 0
   },
   cardBody: {
     flex: 1,
@@ -62,16 +62,16 @@ const HomeScreenCard = (props) =>{
 const HomeScreen = (props) => {
   const {navigate} = props.navigation
   return (
-      <Overlay>
-        <ScrollView style={styles.window}>
+      
+        <ScrollView style={{marginHorizontal: 8}}>
           <HomeScreenCard icon={faCalendarAlt} title='Planner'>
-            <Button transparent onPress={() => navigate('EventList')}>
+            <Button transparent onPress={() => navigate('Events List')}>
               <Text>Events</Text>
             </Button>
-            <Button transparent onPress={() => navigate('ContactList')}>
+            <Button transparent onPress={() => navigate('Contacts List')}>
               <Text>Contacts</Text>
             </Button>
-            <Button transparent onPress={() => navigate('ImportContact')}>
+            <Button transparent onPress={() => navigate('Import Contact')}>
               <Text>Import Phone Contacts</Text>
             </Button>
             <Button transparent onPress={() => navigate('Contact')}>
@@ -90,15 +90,17 @@ const HomeScreen = (props) => {
               <Text>Apply for Vacation Time</Text>
             </Button>
           </HomeScreenCard>
-          <HomeScreenCard icon={faFileAlt} title='Sales'>
+          {/* <HomeScreenCard icon={faFileAlt} title='Sales'>
             <Button transparent>
               <Text>Create Quotation</Text>
             </Button>
             <Button transparent>
               <Text>Create Invoice</Text>
             </Button>
+          </HomeScreenCard> */}
+          <HomeScreenCard icon={faHandshake} title='CRM'>
             
-            <Button transparent onPress={() => navigate('LeadList')}>
+            <Button transparent onPress={() => navigate('Leads List')}>
               <Text>Leads</Text>
             </Button>
             <Button transparent onPress={() => navigate('Lead')}>
@@ -109,14 +111,14 @@ const HomeScreen = (props) => {
             </Button>
           </HomeScreenCard>
           <HomeScreenCard icon={faToolbox} title='Services'>
-            <Button transparent>
+            <Button transparent onPress={() => navigate('Jobs List')}>
                 <Text>Jobs</Text>
             </Button>
           </HomeScreenCard>
           <HomeScreenCard icon={faWarehouse} title='Inventory'>
-            <Button transparent>
+            {/* <Button transparent>
               <Text>Stock Take</Text>
-            </Button>
+            </Button> */}
             <Button transparent onPress={() => navigate('Vendor')}>
               <Text>Add Vendor</Text>
             </Button>
@@ -127,7 +129,6 @@ const HomeScreen = (props) => {
             </Button>
           </HomeScreenCard>     
         </ScrollView>
-      </Overlay>
   );
 };
 

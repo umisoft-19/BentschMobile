@@ -1,6 +1,6 @@
 import React, {useState,useEffect} from 'react';
 import {StyleSheet, ScrollView, Picker } from 'react-native'
-import Overlay from '../components/overlay'
+
 import axios from 'axios'
 import AsyncStorage from '@react-native-community/async-storage';
 
@@ -18,19 +18,14 @@ import { Button,
 
 const styles = StyleSheet.create({
   form: {
-    position: 'absolute',
-    top: 120,
-    left: 0,
-    right: 0,
-    bottom: 32,
+  
     backgroundColor: 'white',
     borderRadius: 8,
-    margin: 16,
-    padding: 8
+    padding: 16
   },
 
   buttonContainer: {
-    marginTop: 24,
+    marginVertical: 24,
     marginHorizontal: 48
   }
 })
@@ -68,7 +63,6 @@ const ExpenseScreen = (props) => {
 
   const {navigate} = props.navigation;
   return (
-    <Overlay>
       <ScrollView style={styles.form}>
         <Form>
           <Item>
@@ -89,7 +83,7 @@ const ExpenseScreen = (props) => {
                 keyboardType="numeric"/>
           </Item>
          
-          <View style={{marginTop: 16, marginLeft: 12}}>
+          <View style={{backgroundColor: '#efefef', padding: 4, margin:12}}>
             <Text>Category:</Text>
             <Picker value={category} onValueChange={val => setCategory(val)}>
                 <Picker.Item value='0' label='Advertising'/>
@@ -124,6 +118,7 @@ const ExpenseScreen = (props) => {
           <Text style={{fontSize: 24}}>Billable</Text>
           <Text>Is Billable?</Text>
           <Switch value={billable} onValueChange={val => setBillable(val)} />
+          <View style={{backgroundColor: '#efefef', padding: 4, margin: 12}}>
           <Text>Customer:</Text>
           <Picker value={customer} onValueChange={val => setCustomer(val)}>
               {customers.map(cus => <Picker.Item 
@@ -131,10 +126,14 @@ const ExpenseScreen = (props) => {
                                           label={`${cus.name}`}/>)}
               
           </Picker>
+          </View>
+          
         </Form>
         <View style={styles.buttonContainer}>
-        <Button primary 
-           onPress={() =>{
+        <Button 
+          style={{flexDirection: 'row', justifyContent: 'center',}}
+          primary 
+          onPress={() =>{
             axios.post(`http://${serverStr}/accounting/api/expense/`, {
               date: `${date.toISOString().split('T')[0]}`,
               amount: amount,
@@ -162,7 +161,6 @@ const ExpenseScreen = (props) => {
           </Button>
         </View>
       </ScrollView>
-    </Overlay>
   );
 };
 

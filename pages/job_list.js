@@ -5,21 +5,17 @@ import axios from 'axios'
 import {Text,
          Card,
          CardItem,
-         Body
+         Body,
+         Button
         } from 'native-base';
 import AsyncStorage from '@react-native-community/async-storage';
 
 
 const styles = StyleSheet.create({
   form: {
-    position: 'absolute',
-    top: 120,
-    left: 0,
-    right: 0,
-    bottom: 0,
+  
     backgroundColor: 'white',
     borderRadius: 8,
-    margin: 16,
     padding: 8
   },
 
@@ -31,23 +27,28 @@ const styles = StyleSheet.create({
 
 
 const JobListScreen = (props) => {
-  const [events, setEvents] = React.useState([])
-  const [server, setServer] = React.useState('')
+  const [jobs, setJobs] = React.useState([])
+  const {navigate} = props.navigation
+
+  const colorStatusMap = {
+    'requested': '#ccc',
+    'progress': 'steelblue',
+    'completed': 'limegreen',
+    'authorized': 'green',
+    'declined': 'crimson'
+  }
 
   React.useEffect(() =>{
     async function init(){
       const token = await AsyncStorage.getItem('token')
-      const id = await AsyncStorage.getItem('employeeID')
-      console.log('user id')
-      console.log(id)
-      const serverStr = await AsyncStorage.getItem('server')
-      setServer(serverStr)
-      axios.get(`http://${serverStr}/planner/api/event/`, {
+      const server = await AsyncStorage.getItem('server')
+      axios.get(`http://${server}/services/api/work-order/`, {
         headers: {
         'Authorization': 'Token ' + token
       }
     }).then(res =>{
-        setEvents(res.data.filter(evt => evt.owner == parseInt(id) && evt.completed==false))
+        console.log(res.data)
+        setJobs(res.data.filter(job => job.status != "authorized"))
       }).catch(err =>{
         console.log(err)
       })
@@ -56,20 +57,20 @@ const JobListScreen = (props) => {
     
   },[])
   return (
-    <Overlay>
       <ScrollView style={styles.form}>
-        <Text style={{fontSize: 24}}>My Open Events</Text>
-        {events.map(event => (<Card key={event.id}>
+        {jobs.map(job => (<Card key={job.id}>
           <CardItem>
             <Body>
-            <Text style={{fontWeight: "600", fontSize: 20}}>{event.label}</Text>
-            <Text>{event.date}</Text>
-            <Text style={{color: '#ccc'}}>{event.start_time}</Text>
+            <Text style={{fontWeight: "600", fontSize: 20}}>{job.description}</Text>
+            <Text style={{color: colorStatusMap[job.status], margin: 8}}>{job.status}</Text>
+            <Text style={{color: '#bbb', textAlign: 'right', width: '100%'}}>{job.date}</Text>
+            <Button small primary onPress={() => navigate('Job', {job: job.id})}>
+              <Text>Detail</Text>
+            </Button>
             </Body>
           </CardItem>
         </Card>))}
       </ScrollView>
-    </Overlay>
   );
 };
 

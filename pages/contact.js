@@ -19,18 +19,17 @@ const styles = StyleSheet.create({
   form: {
     position: 'absolute',
     top: 120,
-    left: 0,
-    right: 0,
-    bottom: 32,
+    left: 12,
+    right: 12,
+    bottom: 0,
     backgroundColor: 'white',
     borderRadius: 8,
-    margin: 16,
     padding: 8
   },
 
   buttonContainer: {
-    marginTop: 24,
-    marginHorizontal: 48
+    marginVertical: 24,
+    marginHorizontal: 48,
   }
 })
 
@@ -82,7 +81,9 @@ const ContactScreen = (props) => {
           
         </Form>
         <View style={styles.buttonContainer}>
-        <Button primary 
+        <Button 
+          style={{flexDirection: 'row', justifyContent: 'center'}}
+          primary 
           onPress={() =>{
             axios.post(`http://${serverStr}/base/api/individual/`, {
               first_name: first,

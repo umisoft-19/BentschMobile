@@ -17,18 +17,17 @@ const styles = StyleSheet.create({
   form: {
     position: 'absolute',
     top: 120,
-    left: 0,
-    right: 0,
+    left: 16,
+    right: 16,
     bottom: 0,
     backgroundColor: 'white',
     borderRadius: 8,
-    margin: 16,
     padding: 24,
     flex: 1
   },
 
   buttonContainer: {
-    marginTop: 24,
+    marginTop: 30,
     marginHorizontal: 48
   }
 })
@@ -64,7 +63,9 @@ const LoginScreen = (props) => {
           </Item>
         </Form>
         <View style={styles.buttonContainer}>
-        <Button primary 
+        <Button 
+          style={{flexDirection: 'row', justifyContent: 'center'}}
+          primary 
           onPress={() =>{
             axios.post(`http://${server}/api-token-auth/`, {
               username: name,
@@ -103,7 +104,10 @@ const LoginScreen = (props) => {
           }}>
             <Text style={{textAlign: 'center'}}>Login</Text>
           </Button>
-          <Button primary transparent 
+          <Button
+            style={{marginTop: 20}}
+            primary 
+            transparent 
           onPress={() =>{
                 navigate('Home')  
           }}>

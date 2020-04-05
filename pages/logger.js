@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react';
-import {StyleSheet, ScrollView, ToastAndroid} from 'react-native'
+import {StyleSheet, ScrollView, ToastAndroid, ActivityIndicator} from 'react-native'
 import Overlay from '../components/overlay'
 import axios from 'axios'
 import AsyncStorage from '@react-native-community/async-storage';
@@ -69,10 +69,6 @@ class Time extends React.Component{
   }
 }
 
-const employeeLogin = (employee, server, token) =>{
-
-}
-
 
 function paddedTime(time){
   return`${("0" + time.getHours().toString()).slice(-2)}:${("0" + time.getMinutes().toString()).slice(-2)}`
@@ -80,7 +76,7 @@ function paddedTime(time){
 
 
 const LoggerScreen = (props) => {
-    const [currShift, setCurrShift] = useState('None')
+    const [currShift, setCurrShift] = useState(null)
     const [start, setStart] = useState('-')
     const [end, setEnd] = useState('-')
     let authToken
@@ -108,6 +104,10 @@ const LoggerScreen = (props) => {
           const today = new Date()
           return today >= start && today <= end
         })
+        if(validSchedules.length == 0){
+          setCurrShift("No active shift")
+          return
+        }
         //filter those that cover the current day of week
         const mapping = {
           0: 'sunday',
@@ -128,6 +128,11 @@ const LoggerScreen = (props) => {
             }
           })
         })
+
+        if(validShiftsByDay.length ==0){
+          setCurrShift('No active shift')
+          return
+        }
 
         let validShiftByTime = null
         validShiftsByDay.forEach((shift, index) =>{
@@ -151,6 +156,8 @@ const LoggerScreen = (props) => {
           }
         })
           setCurrShift(shiftObj.data.name)
+        }else{
+          setCurrShift("No active shift")
         }
        
         }
@@ -162,78 +169,45 @@ const LoggerScreen = (props) => {
       <ScrollView style={styles.window}>
         <View style={styles.textContainer}>
             <Time/>
-            <Text style={styles.shiftText}>Current Shift: {currShift}</Text>
-  <Text style={styles.shiftText}>Time In: {start}</Text>
-            <Text style={styles.shiftText}>Time Out: {end}</Text>
+            {currShift == null ?
+              <ActivityIndicator size="large" color="#0000ff" />
+            :
+              <View>
+                <Text style={styles.shiftText}>Current Shift: {currShift}</Text>
+                <Text style={styles.shiftText}>Time In: {start}</Text>
+                <Text style={styles.shiftText}>Time Out: {end}</Text>
+              </View>
+            }
         </View>
-        <View style={styles.buttonContainer}>
+        {currShift == null || "No active shift" == currShift ? null:
+          <View style={styles.buttonContainer}>
             <Button onPress={() =>{
-              
-              //check if an attendance line exists else create a new one.
-              const url2 = `http://${serverStr}/employees/api/latest-attendance-line/${3}/`
-              console.log(url2)
-              axios.get(url2,  {
-            headers: {
-            'Authorization': 'Token ' + authToken
-            }
-          }).then(res => {
-            console.log(res.data)
-            // CHECK IF THE LINE IS FOR THE CURRENT DATE - if not create a new login
-            const now = new Date()
-            const start = new Date(res.data.date).setHours(0,0,0)
-            const end = new Date(res.data.date).setHours(23,59,0)
-            const tsheet = res.data.timesheet
-            if(now > start && now < end){
-              if(!res.data.time_out){
-                ToastAndroid.show(
-                    `All logs for today have been made`,
-                    ToastAndroid.LONG
-                  )
-                navigate('Home')
+              async function submit(){
+                const authToken = await AsyncStorage.getItem('token')
+                const serverStr = await AsyncStorage.getItem('server')
+                const employee = await AsyncStorage.getItem('employeeID')
+                //check if an attendance line exists else create a new one.
+                const url2 = `http://${serverStr}/employees/api/log-in-out/${employee}/`
+                console.log(url2)
+                axios.get(url2,  {
+              headers: {
+              'Authorization': 'Token ' + authToken
               }
-              let time_in = res.data.time_in ? res.data.time_in: `${paddedTime(now)}:00`
-              let time_out = res.data.time_in ? `${paddedTime(now)}:00`: null
+            }).then(res => {
+              ToastAndroid.show(`Logged ${res.data.value} successfully`, ToastAndroid.SHORT)
+  
+            }).catch(err =>{
               
-              axios.patch(`http://${serverStr}/employees/api/attendance/${res.data.id}/`, {
-                time_in: time_in,
-                time_out: time_out
-              },{
-                headers: {
-                'Authorization': 'Token ' + authToken
-                }
-              })  
-            }else{
-              axios.post(`http://${serverStr}/employees/api/attendance/`,  {
-                timesheet: tsheet,
-                time_in: `${paddedTime(now)}:00`,
-                time_out: null,
-                date: now.toISOString().split('T')[0]
-              }, {
-            headers: {
-            'Authorization': 'Token ' + authToken
-            }
-          }).then(res =>{
-            ToastAndroid.show(
-                `Logged in successfully @ ${paddedTime(now)}`,
-                ToastAndroid.LONG
-              )  
-              navigate('Home')
-          }).catch(err => {
-            console.log(err)
-            console.log(err.response)
-            ToastAndroid.show(
-              'Failed to login/out',
-              ToastAndroid.LONG
-              )
-          })
-            }
-          }).catch(err =>{
-            
-          })
+            })
+              }
+              submit()
+             
             }}>
                 <Text>Login/Logout</Text>
             </Button>
         </View>
+        }
+        
       </ScrollView>
     </Overlay>
   );
